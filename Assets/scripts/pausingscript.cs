@@ -7,7 +7,7 @@ public class pausingscript : MonoBehaviour
     public static bool isPaused = false;
     public GameObject pausemenuUI;
     public Animator transishon;
-    
+    public static bool isloaded;
     void Start()
     {
        
@@ -16,19 +16,17 @@ public class pausingscript : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isloaded)
         {
-
-
-            if (isPaused)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                resume();
-            }
-            else
-            {
-                pause();
-            }
 
+
+               
+                    pause();
+                
+
+            }
         }
     }
     public void resume()
@@ -63,8 +61,10 @@ public class pausingscript : MonoBehaviour
     }
     IEnumerator loadScene(int levelindex)
     {
+        isloaded = false;
         transishon.SetTrigger("start");
         yield return new WaitForSeconds(1f);
+        isloaded = true;
         SceneManager.LoadScene(levelindex);
 
     }

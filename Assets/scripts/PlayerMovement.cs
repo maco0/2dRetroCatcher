@@ -58,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        StartCoroutine(loadanim());
         tani = GetComponent<Rigidbody2D>();
         ammotext.text = ammo.ToString();
         hp = maxhp;
@@ -68,63 +69,66 @@ public class PlayerMovement : MonoBehaviour
 
      void FixedUpdate()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-      //  float h = joystick.Horizontal;
-        if (h > 0)
+        if (pausingscript.isloaded)
         {
-            if (Input.GetKey(KeyCode.LeftShift)&&sprintreminder>0)
+            float h = Input.GetAxisRaw("Horizontal");
+            //  float h = joystick.Horizontal;
+            if (h > 0)
             {
-                if (!sprintwoosh.isPlaying)
+                if (Input.GetKey(KeyCode.LeftShift) && sprintreminder > 0)
                 {
-                    sprintwoosh.Play();
+                    if (!sprintwoosh.isPlaying)
+                    {
+                        sprintwoosh.Play();
+                    }
+                    tani.velocity = Vector2.right * sprtintspeed;
+                    sprintreminder -= 1;
+                    sprint.fillAmount -= 0.01f;
+                    sprintright.Play();
                 }
-                tani.velocity = Vector2.right *sprtintspeed;
-                sprintreminder -= 1;
-                sprint.fillAmount -= 0.01f;
-                sprintright.Play();
+                else
+                {
+                    sprintwoosh.Stop();
+                    tani.velocity = Vector2.right * speed;
+                }
+                right.SetBool("right", true);
+                left.SetBool("left", false);
+
+            }
+            else if (h < 0)
+            {
+                if (Input.GetKey(KeyCode.LeftShift) && sprintreminder > 0)
+                {
+                    if (!sprintwoosh.isPlaying)
+                    {
+                        sprintwoosh.Play();
+                    }
+                    tani.velocity = Vector2.left * sprtintspeed;
+                    sprintreminder -= 1;
+                    sprint.fillAmount -= 0.01f;
+                    sprintleft.Play();
+                }
+                else
+                {
+                    sprintwoosh.Stop();
+                    tani.velocity = Vector2.left * speed;
+                }
+
+                right.SetBool("right", false);
+                left.SetBool("left", true);
+
+
             }
             else
             {
-                sprintwoosh.Stop();
-                tani.velocity = Vector2.right * speed;
-            }
-            right.SetBool("right", true);
-            left.SetBool("left", false);
-           
-        }
-        else if (h < 0)
-        {
-            if (Input.GetKey(KeyCode.LeftShift) && sprintreminder>0)
-            {
-                if (!sprintwoosh.isPlaying)
-                {
-                    sprintwoosh.Play();
-                }
-                tani.velocity = Vector2.left * sprtintspeed;
-                sprintreminder -= 1;
-                sprint.fillAmount -= 0.01f;
-                sprintleft.Play();
-            }
-            else
-            {
-               sprintwoosh.Stop();
-                tani.velocity = Vector2.left * speed;
+                //sprintwoosh.Stop();
+                right.SetBool("right", false);
+                left.SetBool("left", false);
+                tani.velocity = Vector2.zero;
             }
 
-            right.SetBool("right", false);
-            left.SetBool("left", true);
-            
-           
+            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -xBound, xBound), transform.position.y);
         }
-        else
-        {
-            //sprintwoosh.Stop();
-            right.SetBool("right", false);
-            left.SetBool("left", false);
-            tani.velocity = Vector2.zero;
-        }
-
-        transform.position = new Vector2(Mathf.Clamp(transform.position.x, -xBound, xBound),transform.position.y);
     }
      void Update()
     {
@@ -239,12 +243,21 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator loadScene(int levelindex)
     {
+        pausingscript.isloaded = false;
         transishon.SetTrigger("start");
         yield return new WaitForSeconds(1f);
+        pausingscript.isloaded = true;
         SceneManager.LoadScene(levelindex);
       
 
     }
 
+    IEnumerator loadanim()
+    {
+        pausingscript.isloaded = false;
+        
+        yield return new WaitForSeconds(1f);
+        pausingscript.isloaded = true;
+    }
     
 }

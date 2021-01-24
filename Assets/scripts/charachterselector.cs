@@ -40,8 +40,10 @@ public class charachterselector : MonoBehaviour
 
     IEnumerator loadScene(int levelindex)
     {
+        pausingscript.isloaded = false;
         transishon.SetTrigger("start");
         yield return new WaitForSeconds(1f);
+        pausingscript.isloaded = true;
         SceneManager.LoadScene(levelindex, LoadSceneMode.Single);
 
     }
